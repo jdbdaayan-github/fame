@@ -1,4 +1,5 @@
 <?php
+
 namespace System\Core;
 
 class View
@@ -18,7 +19,10 @@ class View
      */
     public static function make(string $view, array $data = []): string
     {
-        $file = self::$viewsPath . str_replace('.', DIRECTORY_SEPARATOR, $view) . '.php';
+        $file = self::$viewsPath . str_replace('.', DIRECTORY_SEPARATOR, $view) . '.fame.php';
+        if (!file_exists($file)) {
+            $file = self::$viewsPath . str_replace('.', DIRECTORY_SEPARATOR, $view) . '.php';
+        }
 
         if (!file_exists($file)) {
             throw new \Exception("View file not found: {$file}");

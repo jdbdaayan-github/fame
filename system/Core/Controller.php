@@ -1,7 +1,7 @@
 <?php
 namespace System\Core;
 
-use System\Core\Response;
+use System\Http\Response;
 use System\Core\View;
 
 class Controller
