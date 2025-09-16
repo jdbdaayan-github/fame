@@ -8,5 +8,12 @@
             "name": "June Delrey Da-ayan",
             "email": "jdbdaayan@email.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "System\\": "system/"
+        }
+    },
+    "require": {}
 }
