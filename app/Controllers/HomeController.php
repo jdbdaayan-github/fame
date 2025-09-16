@@ -11,4 +11,9 @@ class HomeController
             'items' => ['Docs', 'Blog', 'Tutorials']
         ]);
     }
+
+    public function about()
+    {
+        return view('about');
+    }
 }

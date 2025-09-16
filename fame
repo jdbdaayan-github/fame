@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/system/Support/helpers.php';
+
+use System\Core\Cli;
+
+Cli::run($argv);

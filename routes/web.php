@@ -1,3 +1,6 @@
 <?php
-$router->get('/', 'HomeController@index');
-$router->get('/hello/{name}', 'HomeController@sayHello');
+
+use App\Controllers\HomeController;
+
+$router->get('/', [HomeController::class, 'index']);
+$router->get('/about', [HomeController::class, 'about']);

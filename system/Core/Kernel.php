@@ -19,7 +19,7 @@ class Kernel
     {
         $routesFile = __DIR__ . '/../../routes/web.php';
         if (file_exists($routesFile)) {
-            $router = $this->router; // pass instance to routes file
+            $router = $this->router;
             require $routesFile;
         }
     }

@@ -7,17 +7,17 @@ class Router
 {
     protected array $routes = [];
 
-    public function get(string $uri, callable|array|string $action): void
+    public function get(string $uri, callable|array $action): void
     {
         $this->addRoute('GET', $uri, $action);
     }
 
-    public function post(string $uri, callable|array|string $action): void
+    public function post(string $uri, callable|array $action): void
     {
         $this->addRoute('POST', $uri, $action);
     }
 
-    protected function addRoute(string $method, string $uri, callable|array|string $action): void
+    protected function addRoute(string $method, string $uri, callable|array $action): void
     {
         $uri = $uri === '/' ? '/' : '/' . trim($uri, '/');
         $this->routes[$method][$uri] = $action;
@@ -38,25 +38,33 @@ class Router
         return new Response('404 Not Found', 404);
     }
 
-    protected function resolveAction(callable|array|string $action, array $params, Request $request)
+    protected function resolveAction(array|callable $action, array $params, Request $request)
     {
-        if (is_string($action) && str_contains($action, '@')) {
-            [$controllerName, $method] = explode('@', $action);
-            $controllerClass = "App\\Controllers\\{$controllerName}";
+        // Closure
+        if (is_callable($action)) {
+            return call_user_func_array($action, $params);
+        }
+
+        // Array-style [Controller::class, 'method']
+        if (is_array($action) && count($action) === 2) {
+            [$controllerClass, $method] = $action;
 
             if (!class_exists($controllerClass)) {
                 return new Response("Controller {$controllerClass} not found", 500);
             }
 
             $instance = new $controllerClass();
+
             if (!method_exists($instance, $method)) {
                 return new Response("Method {$method} not found in {$controllerClass}", 500);
             }
 
             $args = [];
             $reflection = new ReflectionMethod($instance, $method);
+
             foreach ($reflection->getParameters() as $param) {
                 $type = $param->getType()?->getName() ?? null;
+
                 if ($type === Request::class) {
                     $args[] = $request;
                 } elseif (isset($params[$param->getName()])) {
@@ -71,14 +79,6 @@ class Router
             return call_user_func_array([$instance, $method], $args);
         }
 
-        if (is_array($action) && is_callable($action)) {
-            return call_user_func_array($action, $params);
-        }
-
-        if (is_callable($action)) {
-            return call_user_func_array($action, $params);
-        }
-
         return new Response("Invalid route action", 500);
     }
 
@@ -87,9 +87,13 @@ class Router
         $routeParts = array_filter(explode('/', trim($route, '/')));
         $pathParts  = array_filter(explode('/', trim($path, '/')));
 
-        if (count($routeParts) !== count($pathParts)) return false;
-        $params = [];
+        if (empty($routeParts) && empty($pathParts)) {
+            return [];
+        }
 
+        if (count($routeParts) !== count($pathParts)) return false;
+
+        $params = [];
         foreach ($routeParts as $i => $part) {
             if (str_starts_with($part, '{') && str_ends_with($part, '}')) {
                 $paramName = trim($part, '{}');
