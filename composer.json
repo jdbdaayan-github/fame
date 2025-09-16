@@ -1,0 +1,12 @@
+{
+    "name": "fame/framework",
+    "description": "Fame Framework - lightweight PHP framework",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "June Delrey Da-ayan",
+            "email": "jdbdaayan@email.com"
+        }
+    ]
+}
